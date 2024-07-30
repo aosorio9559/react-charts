@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import Plot from 'react-plotly.js';
-import { Color, Data, Layout } from "plotly.js";
+import { Color, Data, Layout, PlotData } from "plotly.js";
 
 
 function App() {
@@ -52,13 +52,12 @@ function App() {
       }]
     }],
   };
-  const [update, setUpdate] = useState<Color[]>([]);
   const [horizontalBarData, setHorizontalBarData] = useState<Data[]>([{
     type: 'bar',
     x: [20, 14, 10, 5, 3, -2, -5],
     y: ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
     orientation: 'h',
-    // marker: { color: "green" }
+    marker: { color: Array(7).fill("green") }  // Initialize with an array of colors
   }]);
 
   useEffect(() => {
@@ -126,19 +125,23 @@ function App() {
         data={horizontalBarData}
         layout={{ title: "", yaxis: { categoryorder: 'category descending' }, hoverlabel: { bgcolor: "red", font: { color: "black" } } }}
         config={{ scrollZoom: true, displaylogo: false }}
-        onHover={data => {
-          let pointNumber = 0;
-          const colors: Color[] = [];
+        onHover={(data) => {
+          const pointNumber = data.points[0].pointNumber;
 
-          for (let i = 0; i < data.points.length; i++) {
-            pointNumber = data.points[i].pointNumber;
-          }
+          setHorizontalBarData(prevData => {
+            const newData = [...prevData] as PlotData[];  // Create a shallow copy of the array
+            const newColors = [...newData[0].marker.color as Color[]];  // Create a copy of the color array
 
-          colors[pointNumber] = '#C54C82';
-          setUpdate(colors);
-          setHorizontalBarData((prev) => {
-            prev[0].marker = { color: colors };
-            return prev;
+            // Reset all colors to green, then set the hovered bar to the highlight color
+            newColors.fill("green");
+            newColors[pointNumber] = '#C54C82';
+
+            newData[0] = {
+              ...newData[0],
+              marker: { ...newData[0].marker, color: newColors }
+            };
+
+            return newData;
           });
         }}
       />
