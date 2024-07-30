@@ -57,7 +57,8 @@ function App() {
     x: [20, 14, 10, 5, 3, -2, -5],
     y: ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
     orientation: 'h',
-    marker: { color: Array(7).fill("green") }  // Initialize with an array of colors
+    marker: { color: Array(7).fill("rgba(58,200,225,.5)") },
+    hovertemplate: ["Custom tooltip", "X: %{x:$.1f}", "Y: %{y}"].join("<br>"),
   }]);
 
   useEffect(() => {
@@ -133,7 +134,7 @@ function App() {
             const newColors = [...newData[0].marker.color as Color[]];  // Create a copy of the color array
 
             // Reset all colors to green, then set the hovered bar to the highlight color
-            newColors.fill("green");
+            newColors.fill("rgba(58,200,225,.5)");
             newColors[pointNumber] = '#C54C82';
 
             newData[0] = {
