@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import Plot from 'react-plotly.js';
-import { Data, Layout } from "plotly.js";
+import { Color, Data, Layout } from "plotly.js";
 
 
 function App() {
@@ -20,7 +20,7 @@ function App() {
       buttons: [{
         method: 'restyle',
         args: ['line.color', 'red'],
-        label: 'red'
+        label: 'red',
       }, {
         method: 'restyle',
         args: ['line.color', 'blue'],
@@ -52,6 +52,14 @@ function App() {
       }]
     }],
   };
+  const [update, setUpdate] = useState<Color[]>([]);
+  const [horizontalBarData, setHorizontalBarData] = useState<Data[]>([{
+    type: 'bar',
+    x: [20, 14, 10, 5, 3, -2, -5],
+    y: ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+    orientation: 'h',
+    // marker: { color: "green" }
+  }]);
 
   useEffect(() => {
     setData([
@@ -115,16 +123,24 @@ function App() {
 
       <h2>Horizontal bar chart</h2>
       <Plot
-        data={
-          [{
-            type: 'bar',
-            x: [20, 14, 10, 5, 3, -2, -5],
-            y: ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
-            orientation: 'h'
-          }]
-        }
-        layout={{ title: "", yaxis: { categoryorder: 'category descending' } }}
+        data={horizontalBarData}
+        layout={{ title: "", yaxis: { categoryorder: 'category descending' }, hoverlabel: { bgcolor: "red", font: { color: "black" } } }}
         config={{ scrollZoom: true, displaylogo: false }}
+        onHover={data => {
+          let pointNumber = 0;
+          const colors: Color[] = [];
+
+          for (let i = 0; i < data.points.length; i++) {
+            pointNumber = data.points[i].pointNumber;
+          }
+
+          colors[pointNumber] = '#C54C82';
+          setUpdate(colors);
+          setHorizontalBarData((prev) => {
+            prev[0].marker = { color: colors };
+            return prev;
+          });
+        }}
       />
 
 
